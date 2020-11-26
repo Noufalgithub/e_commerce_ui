@@ -1,4 +1,6 @@
+import 'package:e_commerce_ui/components/default_button.dart';
 import 'package:e_commerce_ui/constants.dart';
+import 'package:e_commerce_ui/screens/splash/components/splash_content.dart';
 import 'package:e_commerce_ui/size_config.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +10,22 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  int currentPage = 0;
+  List<Map<String, String>> splashData = [
+    {
+      "text": "Welcome to TOKOpal, let's shop!",
+      "image": "assets/images/splash_1.png"
+    },
+    {
+      "text":
+          "We help people connect with store \naround Indramayu West Java Indonesia",
+      "image": "assets/images/splash_2.png"
+    },
+    {
+      "text": "We show the easy way to shop. \nJust stay at home with us",
+      "image": "assets/images/splash_3.png"
+    },
+  ];
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -17,54 +35,62 @@ class _BodyState extends State<Body> {
           children: [
             Expanded(
               flex: 3,
-              child: SplashContent(
-                text: "Welcome to TOKOpal, let's shop!",
-                image: "assets/images/splash_1.png",
+              child: PageView.builder(
+                onPageChanged: (value) {
+                  setState(() {
+                    currentPage = value;
+                  });
+                },
+                itemCount: splashData.length,
+                itemBuilder: (context, index) => SplashContent(
+                  text: splashData[index]["text"],
+                  image: splashData[index]["image"],
+                ),
               ),
             ),
             Expanded(
               flex: 2,
-              child: SizedBox(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidht(20)),
+                child: Column(
+                  children: [
+                    Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        splashData.length,
+                        (index) => buildDot(index: index),
+                      ),
+                    ),
+                    Spacer(
+                      flex: 3,
+                    ),
+                    DefaultButton(
+                      text: "Continue",
+                      press: () {},
+                    ),
+                    Spacer()
+                  ],
+                ),
+              ),
             )
           ],
         ),
       ),
     );
   }
-}
 
-class SplashContent extends StatelessWidget {
-  const SplashContent({
-    Key key,
-    this.text,
-    this.image,
-  }) : super(key: key);
-
-  final String text, image;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Spacer(),
-        Text(
-          "TOKOpal",
-          style: TextStyle(
-            fontSize: getProportionateScreenWidht(36),
-            color: kPrimaryColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(text),
-        Spacer(
-          flex: 2,
-        ),
-        Image.asset(
-          image,
-          height: getProportionateScreenHeight(265),
-          width: getProportionateScreenWidht(235),
-        )
-      ],
+  AnimatedContainer buildDot({int index}) {
+    return AnimatedContainer(
+      duration: kAnimationDuration,
+      margin: EdgeInsets.only(right: 5),
+      height: 6,
+      width: currentPage == index ? 20 : 6,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(3),
+        color: currentPage == index ? kPrimaryColor : Color(0xFFD8D8D8),
+      ),
     );
   }
 }
